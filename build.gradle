@@ -28,8 +28,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-liquibase'
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	implementation 'org.springframework.boot:spring-boot-security'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.jetbrains:annotations:26.0.2'
 
     compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
