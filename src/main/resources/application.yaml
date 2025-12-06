@@ -1,3 +1,17 @@
 spring:
   application:
     name: task-tracker-backend
+  datasource:
+    url: jdbc:postgresql://localhost:5432/task-tracker-db
+    username: dev
+    password: dev
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
