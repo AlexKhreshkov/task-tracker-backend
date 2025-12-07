@@ -8,6 +8,8 @@ import com.example.task_tracker_backend.repo.UserRepo;
 import com.example.task_tracker_backend.security.CustomUserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static com.example.task_tracker_backend.utils.ExceptionUtils.requireNonNull;
 
 @Service
@@ -27,8 +29,12 @@ public class UserService {
         return requireNonNull(this.userRepo.findById(id).get(), NotFoundException::new, "User not found");
     }
 
+    public void validateUserCred(String username, String password) {
+        userValidationService.validateUserCred(username, password);
+    }
+
     public void createUser(LoginContract loginContract) {
-        userValidationService.validateUserCred(loginContract.getUsername(), loginContract.getPassword());
+        validateUserCred(loginContract.getUsername(), loginContract.getPassword());
 
         Users user = new Users();
         user.setUsername(loginContract.getUsername());
@@ -36,9 +42,17 @@ public class UserService {
         this.userRepo.saveAndFlush(user);
     }
 
+    public Optional<Users> findByUsername(String username) {
+        return this.userRepo.findByUsername(username);
+    }
+
+    public Optional<Users> findByEmail(String email) {
+        return this.userRepo.findByEmail(email);
+    }
+
     public UserContract getUser(CustomUserDetails user) {
         return UserContract.builder()
-                .username(user.getUsername())
+                .email(user.getUser().getEmail())
                 .build();
     }
 }

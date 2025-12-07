@@ -10,6 +10,6 @@ import lombok.*;
 @Builder
 public class UserContract {
 
-    @JsonProperty("username")
-    private String username;
+    @JsonProperty("email")
+    private String email;
 }

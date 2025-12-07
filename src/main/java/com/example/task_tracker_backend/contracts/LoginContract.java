@@ -15,4 +15,7 @@ public class LoginContract {
 
     @JsonProperty("password")
     private String password;
+
+    @JsonProperty("email")
+    private String email;
 }
