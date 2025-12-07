@@ -36,7 +36,7 @@ public class CustomUserDetails implements UserDetails, Serializable {
     }
 
     public String getUsername() {
-        return user.getUsername();
+        return user.getEmail();
     }
 
     public boolean isAccountNonExpired() {

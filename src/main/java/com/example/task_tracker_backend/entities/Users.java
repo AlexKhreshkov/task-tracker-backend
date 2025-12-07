@@ -19,9 +19,7 @@ public class Users implements Serializable {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "username", nullable = false)
-    private String username;
-
+    @Column(name = "email", nullable = false)
     private String email;
 
     @JsonIgnore

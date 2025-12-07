@@ -29,21 +29,17 @@ public class UserService {
         return requireNonNull(this.userRepo.findById(id).get(), NotFoundException::new, "User not found");
     }
 
-    public void validateUserCred(String username, String password) {
-        userValidationService.validateUserCred(username, password);
+    public void validateUserCred(String email, String password) {
+        userValidationService.validateUserCred(email, password);
     }
 
     public void createUser(LoginContract loginContract) {
-        validateUserCred(loginContract.getUsername(), loginContract.getPassword());
+        validateUserCred(loginContract.getEmail(), loginContract.getPassword());
 
         Users user = new Users();
-        user.setUsername(loginContract.getUsername());
+        user.setEmail(loginContract.getEmail());
         user.setPassword(passwordService.encodePassword(loginContract.getPassword()));
         this.userRepo.saveAndFlush(user);
-    }
-
-    public Optional<Users> findByUsername(String username) {
-        return this.userRepo.findByUsername(username);
     }
 
     public Optional<Users> findByEmail(String email) {

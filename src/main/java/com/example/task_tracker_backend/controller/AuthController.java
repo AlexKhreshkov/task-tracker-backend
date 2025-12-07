@@ -38,12 +38,12 @@ public class AuthController {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginContract.getUsername(),
+                            loginContract.getEmail(),
                             loginContract.getPassword()
                     )
             );
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getUsername());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getEmail());
             String jwt = jwtUtil.generateToken(userDetails);
 
             return ResponseEntity.ok(new JwtResponse(jwt));
@@ -55,10 +55,7 @@ public class AuthController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract) {
 
-        userService.validateUserCred(loginContract.getUsername(), loginContract.getPassword());
-        if (this.userService.findByUsername(loginContract.getUsername()).isPresent()) {
-            throw new ConflictException("User with " + loginContract.getUsername() + " login already exists");
-        }
+        userService.validateUserCred(loginContract.getEmail(), loginContract.getPassword());
 
         if (this.userService.findByEmail(loginContract.getEmail()).isPresent()) {
             throw new ConflictException("User with " + loginContract.getEmail() + " email already exists");
@@ -69,12 +66,12 @@ public class AuthController {
 
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginContract.getUsername(),
+                            loginContract.getEmail(),
                             loginContract.getPassword()
                     )
             );
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getUsername());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getEmail());
             String jwt = jwtUtil.generateToken(userDetails);
 
             return ResponseEntity.ok(new JwtResponse(jwt));

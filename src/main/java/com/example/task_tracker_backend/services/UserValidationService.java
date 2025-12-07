@@ -8,13 +8,13 @@ import static com.example.task_tracker_backend.utils.ExceptionUtils.requireNonNu
 @Service
 public class UserValidationService {
 
-    private final static int USERNAME_MIN_LENGTH = 3;
+    private final static int EMAIL_MIN_LENGTH = 3;
     private final static int PASSWORD_MIN_LENGTH = 3;
 
-    private void validateUsername(String username) {
-        requireNonNull(username, ValidationException::new, "Username is null");
-        if (username.strip().length() < USERNAME_MIN_LENGTH) {
-            throw new ValidationException("Username is less then 3 symbols");
+    private void validateEmail(String email) {
+        requireNonNull(email, ValidationException::new, "Email is null");
+        if (email.strip().length() < EMAIL_MIN_LENGTH) {
+            throw new ValidationException("Email is less then 3 symbols");
         }
     }
 
@@ -25,8 +25,8 @@ public class UserValidationService {
         }
     }
 
-    public void validateUserCred(String username, String password) {
-        validateUsername(username);
+    public void validateUserCred(String email, String password) {
+        validateEmail(email);
         validatePassword(password);
     }
 }
