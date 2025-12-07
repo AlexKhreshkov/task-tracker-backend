@@ -3,8 +3,12 @@ package com.example.task_tracker_backend.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Setter
 @Getter
@@ -25,4 +29,11 @@ public class Users implements Serializable {
     @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
+
+    @Column(name = "created_at")
+    @JdbcTypeCode(SqlTypes.TIMESTAMP)
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 }
