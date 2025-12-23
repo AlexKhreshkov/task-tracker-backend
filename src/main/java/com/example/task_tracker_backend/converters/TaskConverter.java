@@ -15,6 +15,7 @@ public class TaskConverter {
                 .text(task.getText())
                 .userId(task.getUser() != null ? task.getUser().getId() : null)
                 .createdAt(task.getCreatedAt())
+                .doneAt(task.getDoneAt())
                 .status(task.getStatus())
                 .build();
     }
