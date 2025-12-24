@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/task")
@@ -34,14 +33,18 @@ public class TaskController {
     @GetMapping("/{taskId}")
     public TaskContract getTask(@PathVariable Long taskId, @AuthenticationPrincipal CustomUserDetails user) {
         Task task = taskService.getTaskById(taskId);
-        if (!Objects.equals(task.getUser().getId(), user.getUser().getId())) {
+        if (!taskService.isUsersTask(task, user.getUser())) {
          throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
         return taskConverter.toContract(task);
     }
 
     @DeleteMapping("/{taskId}")
-    public void deleteTask(@PathVariable Long taskId) {
+    public void deleteTask(@PathVariable Long taskId, @AuthenticationPrincipal CustomUserDetails user) {
+        Task task = taskService.getTaskById(taskId);
+        if (!taskService.isUsersTask(task, user.getUser())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         taskService.deleteTask(taskId);
     }
 
@@ -61,12 +64,20 @@ public class TaskController {
     }
 
     @PatchMapping("/{taskId}")
-    public void updateTask(@PathVariable Long taskId, @RequestBody TaskContract taskContract) {
+    public void updateTask(@PathVariable Long taskId, @RequestBody TaskContract taskContract, @AuthenticationPrincipal CustomUserDetails user) {
+        Task task = taskService.getTaskById(taskId);
+        if (!taskService.isUsersTask(task, user.getUser())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         taskService.updateTask(taskId, taskContract);
     }
 
     @PatchMapping("status/{taskId}")
-    public void updateTaskStatus(@PathVariable Long taskId, @RequestBody TaskContract taskContract) {
+    public void updateTaskStatus(@PathVariable Long taskId, @RequestBody TaskContract taskContract, @AuthenticationPrincipal CustomUserDetails user) {
+        Task task = taskService.getTaskById(taskId);
+        if (!taskService.isUsersTask(task, user.getUser())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
         taskService.updateTaskStatus(taskId, taskContract.getStatus());
     }
 }

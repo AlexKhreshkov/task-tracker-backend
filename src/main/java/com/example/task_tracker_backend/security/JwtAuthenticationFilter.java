@@ -3,6 +3,7 @@ package com.example.task_tracker_backend.security;
 import com.example.task_tracker_backend.services.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,8 +45,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (Exception e) {
                 logger.error("JWT Token has expired");
             }
-        } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+        } else if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    jwtToken = cookie.getValue();
+                    try {
+                        username = jwtUtil.extractUsername(jwtToken);
+                    } catch (IllegalArgumentException e) {
+                        logger.error("Unable to get JWT Token from cookie");
+                    } catch (Exception e) {
+                        logger.error("JWT Token from cookie has expired");
+                    }
+                    break;
+                }
+            }
+        }
+
+        if (jwtToken == null) {
+            logger.warn("No JWT Token ");
         }
 
         // Once we get the token validate it.

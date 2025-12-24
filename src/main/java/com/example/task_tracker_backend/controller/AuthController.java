@@ -6,6 +6,8 @@ import com.example.task_tracker_backend.exception.ConflictException;
 import com.example.task_tracker_backend.security.JwtUtil;
 import com.example.task_tracker_backend.services.CustomUserDetailsService;
 import com.example.task_tracker_backend.services.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@RequestBody LoginContract loginContract) {
+    public ResponseEntity<?> signIn(@RequestBody LoginContract loginContract, HttpServletResponse response) {
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -46,14 +48,21 @@ public class AuthController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getEmail());
             String jwt = jwtUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            Cookie cookie = new Cookie("access_token", jwt);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60);
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok(null);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract) {
+    public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract, HttpServletResponse response) {
 
         userService.validateUserCred(loginContract.getEmail(), loginContract.getPassword());
 

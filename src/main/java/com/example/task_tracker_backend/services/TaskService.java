@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 import static com.example.task_tracker_backend.utils.ExceptionUtils.requireNonNull;
 
@@ -80,4 +81,9 @@ public class TaskService {
         }
         taskRepo.saveAndFlush(task);
     }
+
+    public boolean isUsersTask(Task task, Users user) {
+        return Objects.equals(task.getUser().getId(), user.getId());
+    }
+
 }
