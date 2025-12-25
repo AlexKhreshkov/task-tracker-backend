@@ -26,8 +26,8 @@ public class TaskController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Task createTask(@RequestBody TaskContract taskContract, @AuthenticationPrincipal CustomUserDetails user) {
-        return taskService.createTask(taskContract, user.getUser());
+    public TaskContract createTask(@RequestBody TaskContract taskContract, @AuthenticationPrincipal CustomUserDetails user) {
+        return taskConverter.toContract(taskService.createTask(taskContract, user.getUser()));
     }
 
     @GetMapping("/{taskId}")
