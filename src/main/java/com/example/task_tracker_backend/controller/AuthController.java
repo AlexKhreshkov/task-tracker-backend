@@ -62,7 +62,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract, HttpServletResponse response) {
+    public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract) {
 
         userService.validateUserCred(loginContract.getEmail(), loginContract.getPassword());
 
@@ -89,4 +89,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        deleteCookie(response, "access_token");
+        return ResponseEntity.ok().build();
+    }
+
+    private void deleteCookie(HttpServletResponse response, String name) {
+        Cookie cookie = new Cookie(name, null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+    }
 }

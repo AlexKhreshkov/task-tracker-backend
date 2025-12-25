@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/sql/002-create-tasks-table.sql
   - include:
       file: db/changelog/sql/003-add-user-id-to-tasks.sql
+  - include:
+      file: db/changelog/sql/004-update-status-enum.sql

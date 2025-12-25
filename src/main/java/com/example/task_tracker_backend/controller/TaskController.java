@@ -13,7 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/task")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
@@ -63,13 +63,13 @@ public class TaskController {
         return taskService.getTasksByUserId(userId);
     }
 
-    @PatchMapping("/{taskId}")
-    public void updateTask(@PathVariable Long taskId, @RequestBody TaskContract taskContract, @AuthenticationPrincipal CustomUserDetails user) {
+    @PutMapping("/{taskId}")
+    public TaskContract updateTask(@PathVariable Long taskId, @RequestBody TaskContract taskContract, @AuthenticationPrincipal CustomUserDetails user) {
         Task task = taskService.getTaskById(taskId);
         if (!taskService.isUsersTask(task, user.getUser())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
-        taskService.updateTask(taskId, taskContract);
+        return taskConverter.toContract(taskService.updateTask(taskId, taskContract));
     }
 
     @PatchMapping("status/{taskId}")

@@ -32,7 +32,7 @@ public class TaskService {
                 .text(taskContract.getText())
                 .user(user)
                 .createdAt(Instant.now())
-                .status(taskContract.getStatus() != null ? taskContract.getStatus() : Status.CREATED)
+                .status(taskContract.getStatus() != null ? taskContract.getStatus() : Status.TODO)
                 .build();
 
         return taskRepo.saveAndFlush(task);
@@ -59,15 +59,18 @@ public class TaskService {
         taskRepo.deleteById(taskId);
     }
 
-    public void updateTask(Long taskId, TaskContract taskContract) {
+    public Task updateTask(Long taskId, TaskContract taskContract) {
         requireNonNull(taskId, "taskId is null");
         Task task = getTaskById(taskId);
         task.setTitle(taskContract.getTitle());
         task.setText(taskContract.getText());
-        if (taskContract.getStatus() != null) {
-            task.setStatus(taskContract.getStatus());
+        task.setStatus(taskContract.getStatus());
+        if (Status.DONE.equals(taskContract.getStatus())) {
+            task.setDoneAt(Instant.now());
+        } else {
+            task.setDoneAt(null);
         }
-        taskRepo.saveAndFlush(task);
+        return taskRepo.saveAndFlush(task);
     }
 
     public void updateTaskStatus(Long taskId, Status status) {
