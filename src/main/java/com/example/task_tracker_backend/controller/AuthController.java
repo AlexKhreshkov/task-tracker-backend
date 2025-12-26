@@ -1,6 +1,5 @@
 package com.example.task_tracker_backend.controller;
 
-import com.example.task_tracker_backend.contracts.JwtResponse;
 import com.example.task_tracker_backend.contracts.LoginContract;
 import com.example.task_tracker_backend.event.UserCreatedEventHandler;
 import com.example.task_tracker_backend.exception.ConflictException;
@@ -51,12 +50,7 @@ public class AuthController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getEmail());
             String jwt = jwtUtil.generateToken(userDetails);
 
-            Cookie cookie = new Cookie("access_token", jwt);
-            cookie.setHttpOnly(true);
-            cookie.setSecure(false);
-            cookie.setPath("/");
-            cookie.setMaxAge(60 * 60);
-            response.addCookie(cookie);
+            createCookie("access_token", jwt, 60 * 60, response);
 
             return ResponseEntity.ok(null);
         } catch (Exception e) {
@@ -65,7 +59,7 @@ public class AuthController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract) {
+    public ResponseEntity<?> signUp(@RequestBody LoginContract loginContract, HttpServletResponse response) {
 
         userService.validateUserCred(loginContract.getEmail(), loginContract.getPassword());
 
@@ -87,7 +81,9 @@ public class AuthController {
             String jwt = jwtUtil.generateToken(userDetails);
             userCreatedEventHandler.sendCreatedUser(userDetails);
 
-            return ResponseEntity.ok(new JwtResponse(jwt));
+            createCookie("access_token", jwt, 60 * 60, response);
+
+            return ResponseEntity.ok(null);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
         }
@@ -99,12 +95,16 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-    private void deleteCookie(HttpServletResponse response, String name) {
-        Cookie cookie = new Cookie(name, null);
+    private void createCookie(String access_token,String jwt, int expiry, HttpServletResponse response) {
+        Cookie cookie = new Cookie(access_token, jwt);
         cookie.setHttpOnly(true);
         cookie.setSecure(false);
         cookie.setPath("/");
-        cookie.setMaxAge(0);
+        cookie.setMaxAge(expiry);
         response.addCookie(cookie);
+    }
+
+    private void deleteCookie(HttpServletResponse response, String name) {
+        createCookie(name, null, 0, response);
     }
 }
