@@ -2,6 +2,7 @@ package com.example.task_tracker_backend.controller;
 
 import com.example.task_tracker_backend.contracts.JwtResponse;
 import com.example.task_tracker_backend.contracts.LoginContract;
+import com.example.task_tracker_backend.event.UserCreatedEventHandler;
 import com.example.task_tracker_backend.exception.ConflictException;
 import com.example.task_tracker_backend.security.JwtUtil;
 import com.example.task_tracker_backend.services.CustomUserDetailsService;
@@ -26,13 +27,15 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private final UserCreatedEventHandler userCreatedEventHandler;
 
-    public AuthController(UserService userService, AuthenticationManager authenticationManager, 
-                         JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
+    public AuthController(UserService userService, AuthenticationManager authenticationManager,
+                          JwtUtil jwtUtil, CustomUserDetailsService userDetailsService, UserCreatedEventHandler userCreatedEventHandler) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
+        this.userCreatedEventHandler = userCreatedEventHandler;
     }
 
     @PostMapping("/sign-in")
@@ -82,6 +85,7 @@ public class AuthController {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(loginContract.getEmail());
             String jwt = jwtUtil.generateToken(userDetails);
+            userCreatedEventHandler.sendCreatedUser(userDetails);
 
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (Exception e) {
